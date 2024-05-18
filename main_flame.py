@@ -45,7 +45,7 @@ class FlameParticle:
 
 
 class Flame:
-    def __init__(self, width, height, x=1280 - 100, y=720 - 200):
+    def __init__(self, width, height, x=1280 - 100, y=720 - 320):
         super().__init__()
         self.image = pygame.Surface([width, height])
         self.image.fill((255, 0, 0))  # Remplir la surface de rouge
@@ -58,6 +58,7 @@ class Flame:
         self.flame_particles = []
         self.squares = []
         self.health = 100
+        self.score = 0
 
         for i in range(self.flame_intensity * 40):
             self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 10)))
@@ -78,3 +79,8 @@ class Flame:
     def add_square(self, square):
         self.squares.append(square)
         self.health += 10
+        self.score += 10
+
+    def draw_score(self, screen, font):
+            score_text = font.render(f'Score: {self.score}', True, (255, 255, 255))
+            screen.blit(score_text, (10, 10))

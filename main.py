@@ -2,6 +2,8 @@ import pygame
 import random
 from main_flame import Flame
 from main_flame import FlameParticle
+from Sprite import AnimatedSprite
+
 
 BLUE_SQUARE_RESPAWN_EVENT = pygame.USEREVENT + 1
 
@@ -15,73 +17,6 @@ class BlueSquare(pygame.sprite.Sprite):
 
     def follow_sprite(self, sprite):
         self.rect.topleft = sprite.rect.topleft
-
-class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, images, x, y):
-        super().__init__()
-        self.images = [pygame.image.load(img) for img in images]
-        self.index = 0
-        self.image = self.images[self.index]
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        self.counter = 0
-        self.delay = 10
-        self.speed = 5
-        self.jumping = False
-        self.jump_height = 10
-        self.gravity = 1
-        self.fall_speed = 0
-        self.max_fall_speed = 15
-        self.start_x = x
-        self.start_y = y
-        self.blue_squares = []
-        self.carried_squares = []
-
-    def reset(self):
-        self.index = 0
-        self.image = self.images[self.index]
-        self.rect.topleft = (self.start_x, self.start_y)
-        self.counter = 0
-        self.jumping = False
-        self.jump_height = 10
-        self.fall_speed = 0
-
-    def jump(self):
-        if not self.jumping:
-            self.jumping = True
-
-    def update(self, blue_squares):
-        self.counter += 1
-        if self.counter >= self.delay:
-            self.index = (self.index + 1) % len(self.images)
-            self.image = self.images[self.index]
-            self.counter = 0
-        if self.jumping:
-            self.rect.y -= self.jump_height
-            self.jump_height -= self.gravity
-            if self.jump_height < -10:
-                self.jumping = False
-                self.jump_height = 15
-        if not self.jumping:
-            self.fall_speed = min(self.fall_speed + self.gravity, self.max_fall_speed)
-            self.rect.y += self.fall_speed
-        if self.rect.y > 550:
-            self.reset()
-        for square in blue_squares:  # Assuming blue_squares is a list of BlueSquare instances
-            if self.rect.colliderect(square.rect):
-                square.follow_sprite(self)
-        for square in blue_squares:
-            if self.rect.colliderect(square.rect):
-                square.follow_sprite(self)
-                self.blue_squares.append(square)  # Ajoutez le carré bleu à la liste des carrés ramassés
-                blue_squares.remove(square)
-                pygame.time.set_timer(BLUE_SQUARE_RESPAWN_EVENT, 300)
-
-    def move(self, direction):
-        if direction == 'right':
-            self.rect.x += self.speed
-        elif direction == 'left':
-            self.rect.x -= self.speed
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -118,9 +53,13 @@ def create_window():
                      'assets/fire/18_fire.png','assets/fire/19_fire.png']
     animated_fire = AnimatedSprite(fire_images, 100, 100)
 
+    olympic_flame = ['assets/olympic.png']
+    animated_olympic_flame = AnimatedSprite(olympic_flame, 100, 100)
     platform_x = 0
     platform_y = 540
     platform_width = 1200
+
+    font = pygame.font.Font(None, 36)
 
     blue_squares = [BlueSquare(random.randint(platform_x, platform_x + platform_width), platform_y - 90) for _ in range(5)]
 
@@ -151,10 +90,15 @@ def create_window():
         window.blit(background, (0, -40))
         for platform in platforms:
             window.blit(platform.image, platform.rect)
-            
+        
+        new_width, new_height = 200, 200
+        animated_olympic_flame.image_ = pygame.transform.scale(animated_olympic_flame.image, (new_width, new_height))
         animated_sprite.update(blue_squares)
         window.blit(animated_sprite.image, animated_sprite.rect)
+        animated_olympic_flame.update(blue_squares)
+        window.blit(animated_olympic_flame.image_, (1070, 400))
         flame.draw_flame(window)
+        flame.draw_score(window, font)
         
         for square in blue_squares:
             animated_fire.update(blue_squares)
@@ -165,7 +109,6 @@ def create_window():
             for square in animated_sprite.blue_squares:
                 flame.add_square(square)
                 animated_sprite.blue_squares.remove(square)
-        
         flame.health -= 0.2
         pygame.display.flip()
         if flame.health <= 0:
