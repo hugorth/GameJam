@@ -3,7 +3,7 @@ import random
 from main_flame import Flame
 from main_flame import FlameParticle
 from Sprite import AnimatedSprite
-import pygame_menu
+from game import main_game
 
 BLUE_SQUARE_RESPAWN_EVENT = pygame.USEREVENT + 1
 
@@ -137,6 +137,7 @@ while running:
                 selected_option = (selected_option + 1) % len(menu_options)
             elif event.key == pygame.K_RETURN:
                 if menu_options[selected_option] == 'Play':
+                    main_game()
                     pass
                 elif menu_options[selected_option] == 'training':
                     
