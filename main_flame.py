@@ -48,8 +48,8 @@ class Flame:
     def __init__(self, width, height, x=1280 - 100, y=720 - 320):
         super().__init__()
         self.image = pygame.Surface([width, height])
-        self.image.fill((255, 0, 0))  # Remplir la surface de rouge
-        self.rect = self.image.get_rect()  # Ajoutez cette ligne
+        self.image.fill((255, 0, 0))
+        self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.x = x
@@ -72,8 +72,10 @@ class Flame:
                 continue
             i.update()
             i.draw(screen)
-            pygame.draw.rect(screen, (255, 0, 0), (self.x, self.rect.height - 20, 100, 10))  # Dessinez la barre de vie en rouge
-            pygame.draw.rect(screen, (0, 255, 0), (self.x, self.rect.height - 20, self.health, 10))  # Dessinez la santé actuelle en vert
+            pygame.draw.rect(screen, (255, 0, 0), (self.x, self.rect.height - 20, 100, 10))
+            pygame.draw.rect(screen, (0, 255, 0), (self.x, self.rect.height - 20, self.health, 10))
+            if self.health <= 0:
+                return False
 
         
     def add_square(self, square):

@@ -3,7 +3,7 @@ import random
 from main_flame import Flame
 from main_flame import FlameParticle
 from Sprite import AnimatedSprite
-
+import pygame_menu
 
 BLUE_SQUARE_RESPAWN_EVENT = pygame.USEREVENT + 1
 
@@ -113,7 +113,47 @@ def create_window():
         pygame.display.flip()
         if flame.health <= 0:
             print('Game Over')
-            pygame.quit()
-            break
+            running = False
+            return
     pygame.quit()
-create_window()
+
+pygame.init()
+
+window = pygame.display.set_mode((1280, 720))
+background = pygame.image.load('assets/menu_bc.jpg')
+background = pygame.transform.scale(background, (1280, 720))
+menu_options = ['Play', 'training', 'Quit']
+selected_option = 0
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                selected_option = (selected_option - 1) % len(menu_options)
+            elif event.key == pygame.K_DOWN:
+                selected_option = (selected_option + 1) % len(menu_options)
+            elif event.key == pygame.K_RETURN:
+                if menu_options[selected_option] == 'Play':
+                    pass
+                elif menu_options[selected_option] == 'training':
+                    
+                    running = True
+                    create_window()
+                    pass
+                elif menu_options[selected_option] == 'Quit':
+                    running = False
+
+    window.fill((0, 0, 0))
+    window.blit(background, (0, -40))
+
+    for i, option in enumerate(menu_options):
+        color = (255, 255, 255) if i == selected_option else (100, 100, 100)
+        text = pygame.font.Font(None, 36).render(option, True, color)
+        window.blit(text, (100, 100 + i * 40))
+
+    pygame.display.flip()
+
+pygame.quit()

@@ -56,13 +56,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
             self.rect.y += self.fall_speed
         if self.rect.y > 550:
             self.reset()
-        for square in blue_squares:  # Assuming blue_squares is a list of BlueSquare instances
+        for square in blue_squares:
             if self.rect.colliderect(square.rect):
                 square.follow_sprite(self)
         for square in blue_squares:
             if self.rect.colliderect(square.rect):
                 square.follow_sprite(self)
-                self.blue_squares.append(square)  # Ajoutez le carré bleu à la liste des carrés ramassés
+                self.blue_squares.append(square)
                 blue_squares.remove(square)
                 pygame.time.set_timer(BLUE_SQUARE_RESPAWN_EVENT, 300)
 
